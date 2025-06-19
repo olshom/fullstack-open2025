@@ -57,6 +57,14 @@ const App = () => {
             setNotificationColor(null)
           },5000)
         })
+        .catch(error => {
+          setNotification(error.response.data.error)
+          setNotificationColor('red')
+          setTimeout(() => {
+              setNotification(null)
+              setNotificationColor(null)
+            }, 5000)
+        })
     } else {
       if (window.confirm(`${newName} is already added to phonebook,
       replace the old number with a new one?`)) {
@@ -76,15 +84,18 @@ const App = () => {
             setNewNumber('')
           })
           .catch(error => {
-            setNotification(`the contact ${existingContact.name} was already deleted from server`)
+            if (!error.response.data.error) {
+              setNotification(`the contact ${existingContact.name} was already deleted from server`)
+              setPersons(persons.filter(person => person.id !== existingContact.id))
+            } else {
+              setNotification(error.response.data.error)
+            }
             setNotificationColor('red')
             setTimeout(() => {
               setNotification(null)
               setNotificationColor(null)
             }, 5000)
-            setPersons(persons.filter(person => person.id !== existingContact.id))
-          })
-
+        })
       }
     }
   }
